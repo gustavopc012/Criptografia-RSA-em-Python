@@ -11,11 +11,14 @@ O programa permite ao usuário:
 
 A codificação da mensagem segue um mapeamento específico:
 A-Z → 2-27 e espaço → 28.
- Tecnologias Utilizadas
+ 
+- Tecnologias Utilizadas
 Linguagem de Programação: Python
+
 Entrada/Saída de dados via terminal
 
 Armazenamento de arquivos .txt no diretório de execução
 
-Objetivo do Projeto
+- Objetivo do Projeto
+
 Implementar de forma funcional e didática o algoritmo RSA, compreendendo os fundamentos matemáticos por trás da criptografia assimétrica. O sistema também foi pensado para ser testado em pares de equipes, como definido na proposta da disciplina.
