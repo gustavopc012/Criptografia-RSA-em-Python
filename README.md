@@ -1,13 +1,13 @@
-# Criptografia-RSA-em-Python
+### Criptografia-RSA-em-Python
 Projeto Final – Criptografia RSA 🔐
 Este projeto foi desenvolvido como parte da disciplina de Matemática Discreta na Universidade Federal de Alagoas (UFAL). Seu principal objetivo é aplicar conceitos matemáticos na implementação prática do algoritmo de criptografia RSA.
 O programa permite ao usuário:
 
-✅ Gerar uma chave pública RSA, a partir de dois números primos e um expoente;
+- Gerar uma chave pública RSA, a partir de dois números primos e um expoente;
 
-🔒 Encriptar mensagens utilizando uma chave pública;
+- Encriptar mensagens utilizando uma chave pública;
 
-🔓 Desencriptar mensagens usando os valores privados da chave.
+- Desencriptar mensagens usando os valores privados da chave.
 
 A codificação da mensagem segue um mapeamento específico:
 A-Z → 2-27 e espaço → 28.
