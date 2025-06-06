@@ -1,113 +1,14 @@
 import math
-import os
 
-# Máximo Divisor Comum
-def mdc(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
+letras_para_numeros = {
+    'A': 2, 'B': 3, 'C': 4, 'D': 5, 'E': 6, 'F': 7, 'G': 8,
+    'H': 9, 'I': 10, 'J': 11, 'K': 12, 'L': 13, 'M': 14,
+    'N': 15, 'O': 16, 'P': 17, 'Q': 18, 'R': 19, 'S': 20,
+    'T': 21, 'U': 22, 'V': 23, 'W': 24, 'X': 25, 'Y': 26,
+    'Z': 27, ' ': 28
+}
 
-# Para calcular d, usando o algoritmo de Euclides
-def modinv(a, m):
-    m0, x0, x1 = m, 0, 1
-    while a > 1:
-        q = a // m
-        m, a = a % m, m
-        x0, x1 = x1 - q * x0, x0
-    return x1 + m0 if x1 < 0 else x1
-
-# Substituindo letras da mensagem por números de acordo com o alfabeto A-Z + espaço, iniciando em A = 2 e indo até espaço = 28
-def codificar_mensagem(mensagem):
-    tabela = {chr(i + 65): i + 2 for i in range(26)}
-    tabela[' '] = 28
-    mensagem = mensagem.upper()
-
-    for char in mensagem:
-        if char not in tabela:
-            raise ValueError(f"Caractere inválido: '{char}'. Use apenas letras A-Z e espaço.")
-
-    return [tabela[char] for char in mensagem]
-
-def decodificar_mensagem(codigos):
-    tabela = {i + 2: chr(i + 65) for i in range(26)}
-    tabela[28] = ' '
-    return ''.join([tabela[c] for c in codigos])
-
-# Para gerar uma chave pública, inicialmente se escolhe dois primos diferentes e um expoente relativamente primo/coprimo, para ser coprimo eles tem que ter apenas 1 como fator comum
-def gerar_chave_publica():
-    p = int(input("Digite um numero primo p: "))
-    q = int(input("Digite um numero primo q: "))
-    e = int(input("Digite um expoente e relativamente primo a (p-1)(q-1): "))
-
-    if not (eh_primo(p) and eh_primo(q)):
-        print("p e q precisam ser primos.")
-        return
-
-    # Aqui é feito calculo para gerar as chaves, é necessário a multiplicação dos números primos para gerar o n que será usado na próxima etapa
-    n = p * q
-
-    if(n <= 28):
-        print("\n")
-        print("Digite valores para p e q de forma que p * q >= 28.")
-        return
-
-    # Para os valores de e e d que servem tanto para a chave pública e privada, respectivamente, verifica-se phi para ver se eles são coprimos de n    
-    phi = (p - 1) * (q - 1)
-    # O número e é escolhido livremente, porém ele precisa ser coprimo de phi, por isso a verificação usando o mdc que deve ser 1 para que sejam coprimos
-    if mdc(e, phi) != 1:
-        print("e não é relativamente primo a (p-1)(q-1).")
-        return
-
-    with open("chave_publica.txt", "w") as f:
-        f.write(f"{n} {e}")
-
-    # Chaves públicas n e e geradas
-    print("Chave pública gerada e salva em chave_publica.txt")
-
-def encriptar():
-    mensagem = input("Digite a mensagem (A-Z e espaço): ")
-    n = int(input("Digite o valor de n da chave pública: "))
-    e = int(input("Digite o valor de e da chave pública: "))
-
-    # Chama a função de codificação para aplicar a criptografia pedida na mensagem usando o alfabeto de A-Z + espaço
-    codigos = codificar_mensagem(mensagem)
-    # Para encriptar é aplicada a fórmula que usa os números das chaves públicas, sendo cifra = mensagem ^ chave pública e mod chave pública n
-    cifra = [pow(m, e, n) for m in codigos]
-
-    with open("mensagem_encriptada.txt", "w") as f:
-        f.write(' '.join(map(str, cifra)))
-
-    print("Mensagem encriptada salva em mensagem_encriptada.txt")
-
-def desencriptar():    
-    p = int(input("Digite o valor de p: "))
-    q = int(input("Digite o valor de q: "))
-    e = int(input("Digite o valor de e: "))
-
-    # Aqui é feito cálculo para gerar as chaves, é necessário a multiplicação dos números primos para gerar o n que será usado na próxima etapa
-    n = p * q
-    # Para os valores de e e d que servem tanto para a chave pública e privada, respectivamente, verifica-se phi para ver se eles são coprimos de n    
-    phi = (p - 1) * (q - 1)
-    # Nessa criptografia, d precisa ser o inverso modular de e, o que quer dizer que a multiplicação de d x e tem que ser 1 e tem que resultar em 1 novamente se calcularmos o mod de phi(n), como: (e x d) mod phi(n) = 1    
-    d = modinv(e, phi)
-    # O d é calculado usando o algoritmo de Euclides
-
-    if not os.path.exists("mensagem_encriptada.txt"):
-        print("Arquivo mensagem_encriptada.txt não encontrado.")
-        return
-
-    with open("mensagem_encriptada.txt", "r") as f:
-        cifra = list(map(int, f.read().split()))
-
-    # Para desencriptar, o inverso da fórmula é aplicado, usando os números das chaves privadas
-    # Sendo mensagem' = cifra ^ chave privada d mod chave privada n
-    decodificada = [pow(c, d, n) for c in cifra]
-    mensagem = decodificar_mensagem(decodificada)
-
-    with open("mensagem_desencriptada.txt", "w") as f:
-        f.write(mensagem)
-
-    print("Mensagem desencriptada salva em mensagem_desencriptada.txt")
+numeros_para_letras = {v: k for k, v in letras_para_numeros.items()}
 
 def eh_primo(n):
     if n <= 1:
@@ -117,26 +18,161 @@ def eh_primo(n):
             return False
     return True
 
-def menu():
+def mdc(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def calcular_phi(p, q):
+    return (p - 1) * (q - 1)
+
+def mod_inverso(e, phi):
+    x0, x1 = 0, 1
+    resto0, resto1 = phi, e
+
+    while resto1 != 0:
+        quociente = resto0 // resto1
+        x0, x1 = x1, x0 - quociente * x1
+        resto0, resto1 = resto1, resto0 - quociente * resto1
+
+    if resto0 > 1:
+        return None
+    return x0 + phi if x0 < 0 else x0
+
+def gerar_chave_publica_manual(p, q, e):
+    if not (eh_primo(p) and eh_primo(q)):
+        print("Erro: p e q devem ser primos.")
+        return False
+
+    phi = calcular_phi(p, q)
+    if mdc(e, phi) != 1:
+        print(f"Erro: e = {e} não é coprimo com φ(n) = {phi}.")
+        return False
+
+    n = p * q
+    d = mod_inverso(e, phi)
+    if d is None:
+        print("Erro: não foi possível calcular o inverso modular.")
+        return False
+
+    retornar_chaves(n, e, d, p, q)
+    return True
+
+def criptografar_mensagem(mensagem, e, n):
+    criptografada = []
+    for letra in mensagem:
+        if letra not in letras_para_numeros:
+            print(f"Caractere inválido: {letra}")
+            continue
+        m = letras_para_numeros[letra]
+        c = pow(m, e, n)
+        criptografada.append(str(c))
+
+    with open("criptografada.txt", "w") as file:
+        file.write(" ".join(criptografada))
+    return " ".join(criptografada)
+
+def descriptografar_string(texto_criptografado, p, q, e):
+    phi_n = calcular_phi(p, q)
+    d = mod_inverso(e, phi_n)
+    if d is None:
+        return "Erro: e não tem inverso modular."
+
+    n = p * q
+    partes = texto_criptografado.split()
+    mensagem = []
+
+    for valor in partes:
+        if not valor.strip():
+            continue
+        c = int(valor)
+        m = pow(c, d, n)
+        letra = numeros_para_letras.get(m, '?')
+        mensagem.append(letra)
+
+    resultado = "".join(mensagem)
+    with open("msg_descriptografada.txt", "w") as file:
+        file.write(resultado)
+    return resultado
+
+def retornar_chaves(n, e, d, p, q):
+    with open("chaves.txt", "w") as file:
+        file.write(f"Chave pública (n, e): ({n}, {e})\n")
+        file.write(f"Chave privada (n, d): ({n}, {d})\n")
+        file.write(f"p: {p}\nq: {q}\n")
+
+def main():
     while True:
-        print("\nEscolha uma opção:")
+        print("\n" + "="*50)
+        print("MENU PRINCIPAL - CRIPTOGRAFIA RSA".center(50))
+        print("="*50)
         print("1 - Gerar chave pública")
         print("2 - Encriptar")
         print("3 - Desencriptar")
         print("4 - Sair")
-
-        opcao = input("Opção: ")
+        opcao = input("Opção: ").strip()
 
         if opcao == '1':
-            gerar_chave_publica()
+            print("\n" + "="*50)
+            print("GERAÇÃO DE CHAVES RSA".center(50))
+            print("="*50)
+            p = int(input("Digite p (primo): "))
+            q = int(input("Digite q (primo): "))
+            e = int(input("Digite e (expoente público): "))
+            if gerar_chave_publica_manual(p, q, e):
+                print("Chaves geradas e salvas em chaves.txt")
+
         elif opcao == '2':
-            encriptar()
+            print("\n" + "="*50)
+            print("CRIPTOGRAFIA DE MENSAGEM".center(50))
+            print("="*50)
+            mensagem = input("Mensagem (MAIÚSCULAS, sem acento): ").strip().upper()
+            n = int(input("n (chave pública): "))
+            e = int(input("e (expoente público): "))
+            cripto = criptografar_mensagem(mensagem, e, n)
+            print("Mensagem criptografada:")
+            print(cripto)
+            print("Salva em criptografada.txt")
+
         elif opcao == '3':
-            desencriptar()
+            print("\n" + "="*50)
+            print("DESCRIPTOGRAFIA DE MENSAGEM".center(50))
+            print("="*50)
+            p = int(input("p (primo): "))
+            q = int(input("q (primo): "))
+            e = int(input("e (expoente público): "))
+
+            print("\nDeseja desencriptar de:")
+            print("1 - Digitar a mensagem criptografada")
+            print("2 - Ler de um arquivo .txt")
+            escolha = input("Escolha (1 ou 2): ").strip()
+
+            if escolha == '1':
+                texto = input("Mensagem criptografada: ").strip()
+            elif escolha == '2':
+                nome_arquivo = input("Nome do arquivo (ex: criptografada.txt): ").strip()
+                try:
+                    with open(nome_arquivo, "r") as file:
+                        texto = file.read().strip()
+                        print(f"Conteúdo lido: {texto}")
+                except FileNotFoundError:
+                    print("Arquivo não encontrado.")
+                    continue
+            else:
+                print("Opção inválida.")
+                continue
+
+            resultado = descriptografar_string(texto, p, q, e)
+            print("Mensagem descriptografada:")
+            print(resultado)
+            print("Salva em msg_descriptografada.txt")
+
         elif opcao == '4':
+            print("Encerrando o programa. Até logo!")
             break
+
         else:
             print("Opção inválida.")
 
 if __name__ == "__main__":
-    menu()
+    main()
